@@ -12,7 +12,8 @@ class TodoList {
       const task = {
         id: this.nextId++,
         title: title.trim(),
-        completed: false
+        completed: false,
+        isDeleted: false
       };
    
       this.tasks.push(task);
