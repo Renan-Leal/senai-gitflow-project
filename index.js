@@ -19,4 +19,15 @@ class TodoList {
       this.tasks.push(task);
       return task;
     }
+
+    completeTask(id) {
+        const task = this.tasks.find(task => task.id === id);
+    
+        if (!task) {
+          throw new Error("Tarefa não encontrada.");
+        }
+    
+        task.completed = true;
+        return task;
+      }
 }
