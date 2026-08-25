@@ -1,0 +1,12 @@
+{
+  "name": "senai-gitflow-project",
+  "version": "1.0.0",
+  "description": "Lista de tarefas com testes unitários",
+  "main": "index.js",
+  "scripts": {
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
