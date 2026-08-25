@@ -21,13 +21,49 @@ class TodoList {
     }
 
     completeTask(id) {
-        const task = this.tasks.find(task => task.id === id);
-    
-        if (!task) {
-          throw new Error("Tarefa não encontrada.");
-        }
-    
-        task.completed = true;
-        return task;
+      const task = this.findActiveTask(id);
+
+      task.completed = true;
+      return task;
+    }
+
+    reopenTask(id) {
+      const task = this.findActiveTask(id);
+
+      task.completed = false;
+      return task;
+    }
+
+    updateTask(id, title) {
+      if (typeof title !== "string" || title.trim() === "") {
+        throw new Error("O título da tarefa é obrigatório.");
       }
+
+      const task = this.findActiveTask(id);
+      task.title = title.trim();
+      return task;
+    }
+
+    deleteTask(id) {
+      const task = this.findActiveTask(id);
+
+      task.isDeleted = true;
+      return task;
+    }
+
+    listTasks() {
+      return this.tasks.filter(task => !task.isDeleted);
+    }
+
+    findActiveTask(id) {
+      const task = this.tasks.find(task => task.id === id && !task.isDeleted);
+
+      if (!task) {
+        throw new Error("Tarefa não encontrada.");
+      }
+
+      return task;
+    }
 }
+
+module.exports = TodoList;
