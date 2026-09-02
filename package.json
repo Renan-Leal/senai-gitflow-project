@@ -1,0 +1,17 @@
+{
+  "name": "senai-gitflow-project",
+  "version": "1.0.0",
+  "description": "Lista de tarefas com testes unitários",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --runInBand",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --runInBand --coverage"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "jest": "^30.5.1"
+  }
+}
