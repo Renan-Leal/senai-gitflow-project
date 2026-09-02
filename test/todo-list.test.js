@@ -1,5 +1,3 @@
-const assert = require("node:assert/strict");
-const test = require("node:test");
 const TodoList = require("../index");
 
 test("addTask cria uma tarefa com dados padrão e título normalizado", () => {
@@ -7,28 +5,22 @@ test("addTask cria uma tarefa com dados padrão e título normalizado", () => {
 
   const task = todoList.addTask("  Estudar JavaScript  ");
 
-  assert.deepEqual(task, {
+  expect(task).toEqual({
     id: 1,
     title: "Estudar JavaScript",
     completed: false,
     isDeleted: false
   });
-  assert.equal(todoList.nextId, 2);
+  expect(todoList.nextId).toBe(2);
 });
 
 test("addTask rejeita título vazio ou inválido", () => {
   const todoList = new TodoList();
 
-  assert.throws(() => todoList.addTask(""), {
-    message: "O título da tarefa é obrigatório."
-  });
-  assert.throws(() => todoList.addTask("   "), {
-    message: "O título da tarefa é obrigatório."
-  });
-  assert.throws(() => todoList.addTask(null), {
-    message: "O título da tarefa é obrigatório."
-  });
-  assert.equal(todoList.tasks.length, 0);
+  expect(() => todoList.addTask("")).toThrow("O título da tarefa é obrigatório.");
+  expect(() => todoList.addTask("   ")).toThrow("O título da tarefa é obrigatório.");
+  expect(() => todoList.addTask(null)).toThrow("O título da tarefa é obrigatório.");
+  expect(todoList.tasks).toHaveLength(0);
 });
 
 test("listTasks retorna somente tarefas não excluídas", () => {
@@ -37,7 +29,7 @@ test("listTasks retorna somente tarefas não excluídas", () => {
   todoList.addTask("Segunda tarefa");
   todoList.deleteTask(firstTask.id);
 
-  assert.deepEqual(todoList.listTasks().map(task => task.title), ["Segunda tarefa"]);
+  expect(todoList.listTasks().map(task => task.title)).toEqual(["Segunda tarefa"]);
 });
 
 test("updateTask altera e normaliza o título", () => {
@@ -46,20 +38,16 @@ test("updateTask altera e normaliza o título", () => {
 
   const updatedTask = todoList.updateTask(1, "  Título novo  ");
 
-  assert.equal(updatedTask.title, "Título novo");
-  assert.equal(todoList.listTasks()[0].title, "Título novo");
+  expect(updatedTask.title).toBe("Título novo");
+  expect(todoList.listTasks()[0].title).toBe("Título novo");
 });
 
 test("updateTask rejeita título vazio ou tarefa inexistente", () => {
   const todoList = new TodoList();
   todoList.addTask("Tarefa");
 
-  assert.throws(() => todoList.updateTask(1, ""), {
-    message: "O título da tarefa é obrigatório."
-  });
-  assert.throws(() => todoList.updateTask(99, "Outro título"), {
-    message: "Tarefa não encontrada."
-  });
+  expect(() => todoList.updateTask(1, "")).toThrow("O título da tarefa é obrigatório.");
+  expect(() => todoList.updateTask(99, "Outro título")).toThrow("Tarefa não encontrada.");
 });
 
 test("completeTask marca uma tarefa como concluída", () => {
@@ -68,8 +56,8 @@ test("completeTask marca uma tarefa como concluída", () => {
 
   const completedTask = todoList.completeTask(1);
 
-  assert.equal(completedTask.completed, true);
-  assert.equal(todoList.listTasks()[0].completed, true);
+  expect(completedTask.completed).toBe(true);
+  expect(todoList.listTasks()[0].completed).toBe(true);
 });
 
 test("reopenTask reabre uma tarefa concluída", () => {
@@ -79,8 +67,8 @@ test("reopenTask reabre uma tarefa concluída", () => {
 
   const reopenedTask = todoList.reopenTask(1);
 
-  assert.equal(reopenedTask.completed, false);
-  assert.equal(todoList.listTasks()[0].completed, false);
+  expect(reopenedTask.completed).toBe(false);
+  expect(todoList.listTasks()[0].completed).toBe(false);
 });
 
 test("deleteTask faz exclusão lógica e impede novas operações na tarefa", () => {
@@ -89,14 +77,10 @@ test("deleteTask faz exclusão lógica e impede novas operações na tarefa", ()
 
   const deletedTask = todoList.deleteTask(task.id);
 
-  assert.equal(deletedTask.isDeleted, true);
-  assert.deepEqual(todoList.listTasks(), []);
-  assert.throws(() => todoList.completeTask(task.id), {
-    message: "Tarefa não encontrada."
-  });
-  assert.throws(() => todoList.reopenTask(task.id), {
-    message: "Tarefa não encontrada."
-  });
+  expect(deletedTask.isDeleted).toBe(true);
+  expect(todoList.listTasks()).toEqual([]);
+  expect(() => todoList.completeTask(task.id)).toThrow("Tarefa não encontrada.");
+  expect(() => todoList.reopenTask(task.id)).toThrow("Tarefa não encontrada.");
 });
 
 test("operações com tarefa inexistente lançam erro", () => {
@@ -108,6 +92,6 @@ test("operações com tarefa inexistente lançam erro", () => {
     () => todoList.updateTask(1, "Título"),
     () => todoList.deleteTask(1)
   ]) {
-    assert.throws(operation, { message: "Tarefa não encontrada." });
+    expect(operation).toThrow("Tarefa não encontrada.");
   }
 });

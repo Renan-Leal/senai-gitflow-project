@@ -25,7 +25,7 @@ Students can use this repository to practice:
 
 ## Getting Started
 
-Clone the repository and install the project metadata:
+Clone the repository and install the project dependencies:
 
 ```bash
 git clone <repository-url>
@@ -33,20 +33,52 @@ cd senai-gitflow-project
 npm install
 ```
 
-This project currently has no external dependencies, so `npm install` only
-initializes the local npm environment.
+The test runner used by this project is Jest and is installed as a development
+dependency by `npm install`.
 
 ## Running the Tests
 
-Run the complete unit test suite with:
+Execute the tests correctly from the project root by following these steps:
+
+1. Install [Node.js 18 or newer](https://nodejs.org/).
+2. Clone the repository and enter its directory.
+3. Install the dependencies with `npm install`.
+4. Run the complete Jest suite with:
 
 ```bash
 npm test
 ```
 
-The tests use Node.js's built-in `node:test` runner and are located in
-`test/todo-list.test.js`. They cover task creation, validation, listing,
-updates, completion, reopening, logical deletion, and missing-task errors.
+The `npm test` script executes `jest --runInBand`, which runs all test files
+without parallel workers and returns a failure code when any assertion fails.
+The tests are located in `test/todo-list.test.js`.
+
+To keep Jest running and rerun tests after each file change, use:
+
+```bash
+npm run test:watch
+```
+
+To run the tests and generate the coverage report automatically, use:
+
+```bash
+npm run test:coverage
+```
+
+The report is generated in `coverage/`. Open `coverage/lcov-report/index.html`
+in a browser to view the detailed HTML report.
+
+### Comportamentos garantidos pelos testes
+
+- Criação de tarefas com ID sequencial, título sem espaços nas extremidades,
+  status `completed: false` e `isDeleted: false`.
+- Rejeição de títulos vazios, compostos apenas por espaços ou que não sejam
+  strings, com a mensagem `O título da tarefa é obrigatório.`.
+- Listagem somente de tarefas que não sofreram exclusão lógica.
+- Atualização e normalização do título de uma tarefa ativa.
+- Conclusão e reabertura de tarefas ativas.
+- Exclusão lógica com `isDeleted: true`, impedindo novas operações nessa tarefa.
+- Erro `Tarefa não encontrada.` para tarefas inexistentes ou excluídas.
 
 ## Available API
 
