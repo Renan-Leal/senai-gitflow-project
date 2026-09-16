@@ -68,6 +68,18 @@ npm run test:coverage
 The report is generated in `coverage/`. Open `coverage/lcov-report/index.html`
 in a browser to view the detailed HTML report.
 
+## Pipeline de testes
+
+O workflow `.github/workflows/tests.yml` é executado automaticamente quando
+uma PR é aberta ou atualizada e quando há push na branch `main`. Ele instala as
+dependências com `npm ci`, executa os testes com coverage e valida a geração do
+arquivo `coverage/lcov.info`.
+
+O Jest reprova a execução quando qualquer métrica global ficar abaixo de 80%:
+statements, branches, functions ou lines. Para impedir o merge de uma PR com
+falha, configure o check `Tests / test` como obrigatório nas regras de proteção
+da branch `main` em **Settings > Branches** no GitHub.
+
 ### Comportamentos garantidos pelos testes
 
 - Criação de tarefas com ID sequencial, título sem espaços nas extremidades,
