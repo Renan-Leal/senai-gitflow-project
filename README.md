@@ -68,12 +68,15 @@ npm run test:coverage
 The report is generated in `coverage/`. Open `coverage/lcov-report/index.html`
 in a browser to view the detailed HTML report.
 
-## Pipeline de testes
+## Pipeline de CI
 
 O workflow `.github/workflows/tests.yml` é executado automaticamente quando
 uma PR é aberta ou atualizada e quando há push na branch `main`. Ele instala as
 dependências com `npm ci`, executa os testes com coverage e valida a geração do
-arquivo `coverage/lcov.info`.
+arquivo `coverage/lcov.info`. Em seguida, constrói a imagem Docker com a tag
+baseada no SHA do commit, verificando que o `Dockerfile` continua funcional.
+Essa imagem é usada apenas para validação no CI; ela não é publicada em um
+registry.
 
 O Jest reprova a execução quando qualquer métrica global ficar abaixo de 80%:
 statements, branches, functions ou lines. Para impedir o merge de uma PR com
