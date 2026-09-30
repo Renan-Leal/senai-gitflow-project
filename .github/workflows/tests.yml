@@ -28,3 +28,6 @@ jobs:
 
       - name: Validate coverage report
         run: test -s coverage/lcov.info
+
+      - name: Build Docker image
+        run: docker build --tag senai-gitflow-project:${{ github.sha }} .
