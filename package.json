@@ -1,9 +1,11 @@
 {
   "name": "senai-gitflow-project",
   "version": "1.0.0",
-  "description": "Lista de tarefas com testes unitários",
-  "main": "index.js",
+  "description": "API REST de lista de tarefas com testes unitários e de integração",
+  "main": "src/index.js",
   "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
     "test": "jest --runInBand",
     "test:watch": "jest --watch",
     "test:coverage": "jest --runInBand --coverage"
@@ -11,12 +13,18 @@
   "engines": {
     "node": ">=18"
   },
+  "dependencies": {
+    "express": "^4.21.2"
+  },
   "devDependencies": {
-    "jest": "^30.5.1"
+    "jest": "^30.5.1",
+    "supertest": "^7.1.4"
   },
   "jest": {
+    "testEnvironment": "node",
     "collectCoverageFrom": [
-      "index.js"
+      "src/**/*.js",
+      "!src/server.js"
     ],
     "coverageThreshold": {
       "global": {
