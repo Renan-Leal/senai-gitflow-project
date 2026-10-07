@@ -162,3 +162,70 @@ describe("API de tarefas", () => {
     });
   });
 });
+
+test("PUT /tasks/:id deve retornar 404 quando a tarefa não existe", async () => {
+  const response = await request(app)
+    .put("/tasks/999")
+    .send({
+      title: "Novo título"
+    });
+
+  expect(response.statusCode).toBe(404);
+
+  expect(response.body).toEqual({
+    error: "Tarefa não encontrada."
+  });
+});
+
+test("PUT /tasks/:id deve retornar 400 quando o título é inválido", async () => {
+  await request(app)
+    .post("/tasks")
+    .send({
+      title: "Tarefa"
+    });
+
+  const response = await request(app)
+    .put("/tasks/1")
+    .send({
+      title: ""
+    });
+
+  expect(response.statusCode).toBe(400);
+
+  expect(response.body).toEqual({
+    error: "O título da tarefa é obrigatório."
+  });
+});
+
+test("PATCH /tasks/:id/complete deve retornar 404 quando a tarefa não existe", async () => {
+  const response = await request(app)
+    .patch("/tasks/999/complete");
+
+  expect(response.statusCode).toBe(404);
+
+  expect(response.body).toEqual({
+    error: "Tarefa não encontrada."
+  });
+});
+
+test("PATCH /tasks/:id/reopen deve retornar 404 quando a tarefa não existe", async () => {
+  const response = await request(app)
+    .patch("/tasks/999/reopen");
+
+  expect(response.statusCode).toBe(404);
+
+  expect(response.body).toEqual({
+    error: "Tarefa não encontrada."
+  });
+});
+
+test("DELETE /tasks/:id deve retornar 404 quando a tarefa não existe", async () => {
+  const response = await request(app)
+    .delete("/tasks/999");
+
+  expect(response.statusCode).toBe(404);
+
+  expect(response.body).toEqual({
+    error: "Tarefa não encontrada."
+  });
+});
