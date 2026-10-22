@@ -1,0 +1,24 @@
+
+services:
+  app:
+    name: test-api
+    build: .
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    network_mode: host
+
+  db:
+    name: test-db
+    image: mysql:8.0
+    env_file:
+      - .env
+    network_mode: host
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+
+volumes:
+  mysql_data:
+

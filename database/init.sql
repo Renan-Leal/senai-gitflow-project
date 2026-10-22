@@ -1,0 +1,21 @@
+
+CREATE DATABASE IF NOT EXISTS app_db
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
+USE app_db;
+
+CREATE TABLE IF NOT EXISTS tasks (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  title VARCHAR(255) NOT NULL,
+  completed BOOLEAN NOT NULL DEFAULT FALSE,
+  is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+  PRIMARY KEY (id)
+);
+
+CREATE USER IF NOT EXISTS 'app_user'@'%'
+  IDENTIFIED BY 'app_password';
+
+GRANT SELECT, INSERT, UPDATE, DELETE
+  ON app_db.*
+  TO 'app_user'@'%';

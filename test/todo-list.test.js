@@ -1,97 +1,105 @@
-const TodoList = require("../src/index");
 
-test("addTask cria uma tarefa com dados padrão e título normalizado", () => {
-  const todoList = new TodoList();
+jest.mock("../src/repositories/taskRepository");
 
-  const task = todoList.addTask("  Estudar JavaScript  ");
+const repository = require("../src/repositories/taskRepository");
+const service = require("../src/services/taskService");
 
-  expect(task).toEqual({
-    id: 1,
-    title: "Estudar JavaScript",
-    completed: false,
-    isDeleted: false
+describe("TaskService", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
-  expect(todoList.nextId).toBe(2);
-});
 
-test("addTask rejeita título vazio ou inválido", () => {
-  const todoList = new TodoList();
+  test("deve listar tarefas", async () => {
+    repository.findAll.mockResolvedValue([]);
 
-  expect(() => todoList.addTask("")).toThrow("O título da tarefa é obrigatório.");
-  expect(() => todoList.addTask("   ")).toThrow("O título da tarefa é obrigatório.");
-  expect(() => todoList.addTask(null)).toThrow("O título da tarefa é obrigatório.");
-  expect(todoList.tasks).toHaveLength(0);
-});
+    await expect(service.listTasks()).resolves.toEqual([]);
+    expect(repository.findAll).toHaveBeenCalled();
+  });
 
-test("listTasks retorna somente tarefas não excluídas", () => {
-  const todoList = new TodoList();
-  const firstTask = todoList.addTask("Primeira tarefa");
-  todoList.addTask("Segunda tarefa");
-  todoList.deleteTask(firstTask.id);
+  test("deve criar tarefa com título normalizado", async () => {
+    repository.create.mockResolvedValue({
+      id: 1,
+      title: "Estudar Docker",
+      completed: false,
+      isDeleted: false
+    });
 
-  expect(todoList.listTasks().map(task => task.title)).toEqual(["Segunda tarefa"]);
-});
+    const task = await service.createTask("  Estudar Docker  ");
 
-test("updateTask altera e normaliza o título", () => {
-  const todoList = new TodoList();
-  todoList.addTask("Título antigo");
+    expect(repository.create).toHaveBeenCalledWith("Estudar Docker");
+    expect(task.title).toBe("Estudar Docker");
+  });
 
-  const updatedTask = todoList.updateTask(1, "  Título novo  ");
+  test("deve rejeitar título vazio", async () => {
+    await expect(service.createTask("")).rejects.toThrow(
+      "O título da tarefa é obrigatório."
+    );
 
-  expect(updatedTask.title).toBe("Título novo");
-  expect(todoList.listTasks()[0].title).toBe("Título novo");
-});
+    expect(repository.create).not.toHaveBeenCalled();
+  });
 
-test("updateTask rejeita título vazio ou tarefa inexistente", () => {
-  const todoList = new TodoList();
-  todoList.addTask("Tarefa");
+  test("deve rejeitar título não textual", async () => {
+    await expect(service.createTask(null)).rejects.toThrow(
+      "O título da tarefa é obrigatório."
+    );
+  });
 
-  expect(() => todoList.updateTask(1, "")).toThrow("O título da tarefa é obrigatório.");
-  expect(() => todoList.updateTask(99, "Outro título")).toThrow("Tarefa não encontrada.");
-});
+  test("deve retornar tarefa existente", async () => {
+    repository.findById.mockResolvedValue({
+      id: 1,
+      title: "Tarefa",
+      completed: false,
+      isDeleted: false
+    });
 
-test("completeTask marca uma tarefa como concluída", () => {
-  const todoList = new TodoList();
-  todoList.addTask("Concluir tarefa");
+    await expect(service.getTask(1)).resolves.toMatchObject({
+      id: 1,
+      title: "Tarefa"
+    });
+  });
 
-  const completedTask = todoList.completeTask(1);
+  test("deve lançar erro quando a tarefa não existe", async () => {
+    repository.findById.mockResolvedValue(null);
 
-  expect(completedTask.completed).toBe(true);
-  expect(todoList.listTasks()[0].completed).toBe(true);
-});
+    await expect(service.getTask(999)).rejects.toThrow(
+      "Tarefa não encontrada."
+    );
+  });
 
-test("reopenTask reabre uma tarefa concluída", () => {
-  const todoList = new TodoList();
-  todoList.addTask("Reabrir tarefa");
-  todoList.completeTask(1);
+  test("deve concluir uma tarefa existente", async () => {
+    repository.findById.mockResolvedValue({
+      id: 1,
+      title: "Tarefa",
+      completed: false,
+      isDeleted: false
+    });
 
-  const reopenedTask = todoList.reopenTask(1);
+    repository.setCompleted.mockResolvedValue({
+      id: 1,
+      title: "Tarefa",
+      completed: true,
+      isDeleted: false
+    });
 
-  expect(reopenedTask.completed).toBe(false);
-  expect(todoList.listTasks()[0].completed).toBe(false);
-});
+    const task = await service.completeTask(1);
 
-test("deleteTask faz exclusão lógica e impede novas operações na tarefa", () => {
-  const todoList = new TodoList();
-  const task = todoList.addTask("Excluir tarefa");
+    expect(repository.setCompleted).toHaveBeenCalledWith(1, true);
+    expect(task.completed).toBe(true);
+  });
 
-  const deletedTask = todoList.deleteTask(task.id);
+  test("deve excluir logicamente uma tarefa", async () => {
+    repository.findById.mockResolvedValue({
+      id: 1,
+      title: "Tarefa",
+      completed: false,
+      isDeleted: false
+    });
 
-  expect(deletedTask.isDeleted).toBe(true);
-  expect(todoList.listTasks()).toEqual([]);
-  expect(() => todoList.completeTask(task.id)).toThrow("Tarefa não encontrada.");
-  expect(() => todoList.reopenTask(task.id)).toThrow("Tarefa não encontrada.");
-});
+    repository.softDelete.mockResolvedValue(undefined);
 
-test("operações com tarefa inexistente lançam erro", () => {
-  const todoList = new TodoList();
+    const task = await service.deleteTask(1);
 
-  for (const operation of [
-    () => todoList.completeTask(1),
-    () => todoList.reopenTask(1),
-    () => todoList.updateTask(1, "Título"),
-    () => todoList.deleteTask(1)
-  ]) {
-    expect(operation).toThrow("Tarefa não encontrada.");
-  }
+    expect(repository.softDelete).toHaveBeenCalledWith(1);
+    expect(task.isDeleted).toBe(true);
+  });
 });
