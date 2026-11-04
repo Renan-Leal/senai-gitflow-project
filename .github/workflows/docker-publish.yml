@@ -66,8 +66,8 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/senai-gitflow-project:${{ needs.version.outputs.new_version }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/senai-gitflow-project:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/todo-list-api:${{ needs.version.outputs.new_version }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/todo-list-api:latest
 
       - name: Create and push Git tag
         run: |
