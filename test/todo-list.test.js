@@ -1,4 +1,4 @@
-const TodoList = require("../index");
+const TodoList = require("../src/index");
 
 test("addTask cria uma tarefa com dados padrão e título normalizado", () => {
   const todoList = new TodoList();
