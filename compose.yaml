@@ -12,6 +12,8 @@ services:
   db:
     name: test-db
     image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
     env_file:
       - .env
     network_mode: host

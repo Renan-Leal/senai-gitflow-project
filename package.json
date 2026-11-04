@@ -2,7 +2,7 @@
   "name": "senai-gitflow-project",
   "version": "1.0.0",
   "description": "API REST de lista de tarefas com testes unitários e de integração",
-  "main": "src/index.js",
+  "main": "src/app.js",
   "scripts": {
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
