@@ -1,12 +1,12 @@
 name: Docker Publish
 
-# Workflow de publicação: quando há push na main (merge da develop),
-# roda os testes e, se passarem, publica uma nova versão da imagem
-# no Docker Hub, incrementando o patch da última tag (vX.Y.Z).
+# Workflow de publicação: quando um Pull Request é aberto, roda os testes
+# e, se passarem, publica uma nova versão da imagem no Docker Hub,
+# incrementando o patch da última tag (vX.Y.Z).
 on:
-  push:
-    branches:
-      - main
+  pull_request:
+    types:
+      - opened
 
 permissions:
   contents: write # necessário para criar e enviar a tag da versão
