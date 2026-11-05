@@ -144,6 +144,46 @@ git push -u origin feature/add-task-filter
 Open a pull request, review the changes, confirm that the tests pass, and then
 merge the branch into `main`. Delete the feature branch after the merge.
 
+## Observabilidade
+
+A API expõe métricas no formato Prometheus e um endpoint de saúde:
+
+- `GET /health`: retorna `{ "status": "ok" }`.
+- `GET /metrics`: métricas `http_requests_total`, `http_request_duration_seconds`
+  e as métricas padrão do Node.js (memória, CPU, event loop).
+
+A stack de observabilidade fica em `config/observability/`:
+
+- **Prometheus** coleta `/metrics` da API a cada 15 segundos.
+- **Grafana** lê o Prometheus e exibe o painel **API de Tarefas**, provisionado
+  automaticamente a partir de `config/observability/grafana/`.
+
+### Subindo a stack
+
+1. Copie o arquivo de exemplo e defina as senhas:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Suba todos os serviços a partir da raiz (requer Docker Compose 2.20 ou
+   superior, por causa do `include`):
+
+   ```bash
+   docker compose up -d --build
+   ```
+
+3. Acesse:
+
+   | Serviço | Endereço | Observação |
+   | --- | --- | --- |
+   | API | http://localhost:3000/health | Porta definida por `APP_PORT` |
+   | Prometheus | http://localhost:9090/targets | Job `api` deve estar `UP` |
+   | Grafana | http://localhost:3001 | Usuário `admin`, senha `GRAFANA_ADMIN_PASSWORD` |
+
+Cada serviço tem seu próprio `compose.yaml` em `config/`. O `compose.yaml` da
+raiz apenas inclui os três arquivos.
+
 ## Project Structure
 
 ```text

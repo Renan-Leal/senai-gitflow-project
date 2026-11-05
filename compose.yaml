@@ -1,26 +1,7 @@
-
-services:
-  app:
-    name: test-api
-    build: .
-    ports:
-      - "3000:3000"
-    env_file:
-      - .env
-    network_mode: host
-
-  db:
-    name: test-db
-    image: mysql:8.0
-    environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-    env_file:
-      - .env
-    network_mode: host
-    volumes:
-      - mysql_data:/var/lib/mysql
-      - ./database/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
-
-volumes:
-  mysql_data:
-
+# Ponto de entrada do projeto. Cada serviço fica em config/<serviço>/compose.yaml.
+# Todos os arquivos incluídos compartilham a rede padrão do projeto,
+# então os serviços se enxergam pelo nome (api, db, prometheus, grafana).
+include:
+  - config/database/compose.yaml
+  - config/app/compose.yaml
+  - config/observability/compose.yaml
