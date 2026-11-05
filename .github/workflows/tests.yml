@@ -1,10 +1,13 @@
 name: Tests
 
+# Workflow de testes: roda em Pull Requests, em pushes para develop
+# e pode ser chamado por outros workflows (workflow_call).
 on:
   pull_request:
   push:
     branches:
-      - main
+      - develop
+  workflow_call:
 
 jobs:
   test:
@@ -28,6 +31,3 @@ jobs:
 
       - name: Validate coverage report
         run: test -s coverage/lcov.info
-
-      - name: Build Docker image
-        run: docker build --tag senai-gitflow-project:${{ github.sha }} .
